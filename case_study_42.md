@@ -23,25 +23,57 @@ Analyse a matrix of student marks across subjects, calculate row-wise and column
 
 ## Flowchart
 ```text
-[Start]
-   |
-   v
-[Load students, subjects & nested marks_matrix]
-   |
-   v
-[Loop rows: compute student total & average; track max average]
-   |
-   v
-[Identify all students matching max average]
-   |
-   v
-[Loop columns: compute subject average; flag if < 60.0]
-   |
-   v
-[Print student report, top performers & weak subjects]
-   |
-   v
-[Stop]
+          ┌───────────────────────┐
+          │         Start         │
+          └───────────┬───────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Load students, subjects & nested matrix   │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Loop rows: compute student total & avg;   │
+│ track highest average score               │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Collect all students matching max average │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Loop columns: compute subject average     │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+               ┌─────────────┐
+               │subj_avg<60.0│
+               └──────┬──────┘
+                      │
+         ┌────────────┴────────────┐
+        Yes                       No
+         │                         │
+         ▼                         │
+┌─────────────────┐                │
+│ Flag as weak    │                │
+│ subject         │                │
+└────────┬────────┘                │
+         │                         │
+         └────────────┬────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Print student stats, top performers,      │
+│ subject averages & weak subjects          │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+          ┌───────────────────────┐
+          │         Stop          │
+          └───────────────────────┘
 ```
 
 ## Pseudocode
@@ -125,7 +157,6 @@ English   | Average: 76.25
 === Low-Performing Subjects (< 60.00) ===
 Chemistry (Average: 59.25)
 ```
-
 
 ## Conclusion
 Nested lists with row-major and column-major loops allow clean multi-dimensional analysis across both students and subjects while handling tied top scores cleanly.
