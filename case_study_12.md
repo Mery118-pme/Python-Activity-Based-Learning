@@ -24,28 +24,49 @@ Calculate current attendance percentages and determine the minimum consecutive c
 
 ## Flowchart
 ```text
-[Start]
-   |
-   v
-[Load student (id, attended, total) tuples & threshold T]
-   |
-   v
-[Compute current_pct = (attended / total) * 100]
-   |
-   +--> (current_pct >= T?) --Yes--> [0 classes needed]
-   |         |
-   |         No
-   v
-[Compute min consecutive classes at 100% attendance]
-   |
-   v
-[Simulate 4-of-5 attendance loop until pct >= T]
-   |
-   v
-[Print student recovery summary]
-   |
-   v
-[Stop]
+          ┌───────────────────────┐
+          │         Start         │
+          └───────────┬───────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Load student (id, attended, total) & T    │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Compute current_pct = (att / tot) * 100   │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+               ┌─────────────┐
+               │curr_pct >= T│
+               └──────┬──────┘
+                      │
+         ┌────────────┴────────────┐
+        Yes                       No
+         │                         │
+         ▼                         ▼
+┌─────────────────┐         ┌───────────────────────────────────────────┐
+│ 0 classes needed│         │ Compute min classes at 100% attendance    │
+└────────┬────────┘         └─────────────────────┬─────────────────────┘
+         │                                        │
+         │                                        ▼
+         │                  ┌───────────────────────────────────────────┐
+         │                  │ Loop 4-of-5 scenario until pct >= T       │
+         │                  └─────────────────────┬─────────────────────┘
+         │                                        │
+         └────────────┬───────────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Print student recovery summary            │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+          ┌───────────────────────┐
+          │         Stop          │
+          └───────────────────────┘
 ```
 
 ## Pseudocode
@@ -83,15 +104,8 @@ END
 ```
 
 
+
 ## Test Cases
-| Test Case | Input `(ID, Attended, Total)` | Current % | 100% Scenario | 4-of-5 Scenario |
-| :--- | :--- | :--- | :--- | :--- |
-| TC-1 (Below threshold) | `("STU01", 30, 50)` | `60.00%` | `30` classes (`60/80 = 75%`) | `55` classes (`74/105 = 70.48%` $\rightarrow$ `74/105`? `30+44=74`, `50+55=105`, `74/105`? Wait: `44/55 = 80%`, `(30+44)/(50+55) = 74/105 = 70.48%`—see exact output below!) |
-| TC-2 (Already eligible) | `("STU02", 40, 50)` | `80.00%` | `0` classes | `0` classes |
-| TC-3 (Low attendance) | `("STU03", 21, 40)` | `52.50%` | `36` classes (`57/76 = 75%`) | `180` classes (`165/220 = 75.00%`) |
-
-*(Note: Let's make sure the table matches the exact mathematical result: for `STU01` `(30, 50)` attending 4 of every 5 classes, after `150` classes (`+120` attended), `(30+120)/(50+150) = 150/200 = 75.00%`! Let's put `150` and `180` accurately in the table below.)*
-
 | Test Case | Input `(ID, Attended, Total)` | Current % | 100% Scenario | 4-of-5 Scenario |
 | :--- | :--- | :--- | :--- | :--- |
 | TC-1 (Below threshold) | `("STU01", 30, 50)` | `60.00%` | `30` classes (`60/80 = 75.00%`) | `150` classes (`150/200 = 75.00%`) |
