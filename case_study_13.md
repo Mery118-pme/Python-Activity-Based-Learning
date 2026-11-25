@@ -23,29 +23,62 @@ Process a sequence of deposits and withdrawals, maintain a simulated balance, en
 
 ## Flowchart
 ```text
-[Start]
-   |
-   v
-[Initialize balance, limits, counters & log list]
-   |
-   v
-[For each (txn_type, amount) in sequence]
-   |
-   +--> (amount <= 0?) --Yes--> [Log REJECTED: non-positive amount]
-   |         |
-   |         No
-   +--> (txn_type == "DEPOSIT"?) --Yes--> [Update balance, log APPROVED]
-   |         |
-   |         No
-   +--> (txn_type == "WITHDRAW"?)
-             |--(violates limit or balance?)--> [Log REJECTED with reason]
-             |--(valid)-----------------------> [Deduct balance, update daily_withdrawn, log APPROVED]
-   |
-   v
-[Print audit log & summary tuple]
-   |
-   v
-[Stop]
+          ┌───────────────────────┐
+          │         Start         │
+          └───────────┬───────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Initialize balance, limits, counters & log│
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ For each (txn_type, amount) in sequence   │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+               ┌─────────────┐
+               │ amount <= 0 │
+               └──────┬──────┘
+                      │
+         ┌────────────┴────────────┐
+        Yes                       No
+         │                         │
+         ▼                         ▼
+┌─────────────────┐         ┌───────────────────┐
+│ Log REJECTED:   │         │ txn_type=="DEPOSIT"│
+│ invalid amount  │         └─────────┬─────────┘
+└────────┬────────┘                   │
+         │               ┌────────────┴────────────┐
+         │              Yes                       No
+         │               │                         │
+         │               ▼                         ▼
+         │      ┌─────────────────┐       ┌────────────────────┐
+         │      │ Update balance, │       │ txn_type=="WITHDRAW"│
+         │      │ log APPROVED    │       └──────────┬─────────┘
+         │      └────────┬────────┘                  │
+         │               │              ┌────────────┴────────────┐
+         │               │             Yes                       No
+         │               │              │                         │
+         │               │              ▼                         ▼
+         │               │     ┌─────────────────┐       ┌─────────────────┐
+         │               │     │ Check limits &  │       │ Log REJECTED:   │
+         │               │     │ balance; log    │       │ unknown type    │
+         │               │     │ APPROVED/REJ    │       └────────┬────────┘
+         │               │     └────────┬────────┘                │
+         │               │              │                         │
+         └───────┬───────┴──────┬───────┴───────────┬─────────────┘
+                 │              │                   │
+                 ▼              ▼                   ▼
+┌───────────────────────────────────────────┐
+│ Print audit log & summary tuple           │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+          ┌───────────────────────┐
+          │         Stop          │
+          └───────────────────────┘
 ```
 
 ## Pseudocode
