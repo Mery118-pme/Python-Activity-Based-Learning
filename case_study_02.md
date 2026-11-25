@@ -29,32 +29,62 @@ Calculate household electricity bills across multiple months using progressive c
 
 ## Flowchart
 ```text
-[Start]
-   |
-   v
-[Load monthly (month, units) tuples]
-   |
-   v
-[For each month: compute slab cost + fixed charge]
-   |
-   +--> (units <= 120?) --Yes--> [Apply 5% rebate]
-   |         |
-   |         No
-   |         v
-   +--> (units > 500?)  --Yes--> [Apply 8% surcharge]
-   |         |
-   |         No
-   v
-[Append (month, units, bill) to records list]
-   |
-   v
-[Loop consecutive months: check if unit jump > 35%]
-   |
-   v
-[Print summary & unusual increases]
-   |
-   v
-[Stop]
+          ┌───────────────────────┐
+          │         Start         │
+          └───────────┬───────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Load monthly (month, units) tuples list   │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ For each month: compute slab cost + fixed │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+               ┌─────────────┐
+               │ units <= 120│
+               └──────┬──────┘
+                      │
+         ┌────────────┴────────────┐
+        Yes                       No
+         │                         │
+         ▼                         ▼
+┌─────────────────┐         ┌─────────────┐
+│ Apply 5% rebate │         │ units > 500 │
+└────────┬────────┘         └──────┬──────┘
+         │                         │
+         │            ┌────────────┴────────────┐
+         │           Yes                       No
+         │            │                         │
+         │            ▼                         │
+         │   ┌───────────────────┐              │
+         │   │ Apply 8% surcharge│              │
+         │   └─────────┬─────────┘              │
+         │             │                        │
+         └──────┬──────┴───────────┬────────────┘
+                │                  │
+                ▼                  ▼
+┌───────────────────────────────────────────┐
+│ Append (month, units, bill) to records    │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Loop consecutive months: unit jump > 35%? │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Print summary & unusual increases         │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+          ┌───────────────────────┐
+          │         Stop          │
+          └───────────────────────┘
 ```
 
 ## Pseudocode
