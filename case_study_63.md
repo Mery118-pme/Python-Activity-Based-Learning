@@ -11,7 +11,7 @@ Process historical product prices stored in lists, calculate percentage changes,
 ## Assumptions
 - Each product entry is a tuple `(product_code, product_name, price_list)` where `price_list` contains at least `2` positive numeric prices in chronological order.
 - Period-over-period percentage change from `prev_price` to `curr_price` is `((curr_price - prev_price) / prev_price) * 100`.
-- Fluctuation magnitude for a step is the absolute percentage change (`abs(pct_change)`), and a product is flagged if its maximum single-step percentage fluctuation is `>=` (or `>`) `15.0%`.
+- Fluctuation magnitude for a step is the absolute percentage change (`abs(pct_change)`), and a product is flagged if its maximum single-step percentage fluctuation exceeds `15.0%`.
 
 ## Algorithm
 1. Store product records as a list of `(prod_code, prod_name, prices)` tuples and set `alert_threshold = 15.0`.
@@ -26,28 +26,78 @@ Process historical product prices stored in lists, calculate percentage changes,
 
 ## Flowchart
 ```text
-[Start]
-   |
-   v
-[Load (code, name, prices_list) tuples & threshold]
-   |
-   v
-[For each product: loop consecutive prices (prev_p, curr_p)]
-   |
-   v
-[Compute pct_change & abs(pct_change); track max fluctuation]
-   |
-   v
-[Store product summary; if max_mag > threshold, flag product]
-   |
-   v
-[Identify highest overall fluctuation across products]
-   |
-   v
-[Print summary, flagged products & peak fluctuation]
-   |
-   v
-[Stop]
+          ┌───────────────────────┐
+          │         Start         │
+          └───────────┬───────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Load (code, name, prices_list) tuples &   │
+│ threshold; validate len(prices) >= 2      │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ For each product: loop consecutive pairs  │
+│ (prev_p, curr_p) for idx = 1 to n - 1     │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Compute pct_change & magnitude = abs(pct) │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+               ┌─────────────┐
+               │mag > max_mag│
+               └──────┬──────┘
+                      │
+         ┌────────────┴────────────┐
+        Yes                       No
+         │                         │
+         ▼                         │
+┌─────────────────┐                │
+│ Update max_mag  │                │
+│ & max_signed_pct│                │
+└────────┬────────┘                │
+         │                         │
+         └────────────┬────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Append product summary row to summaries   │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+               ┌─────────────┐
+               │mag>threshold│
+               └──────┬──────┘
+                      │
+         ┌────────────┴────────────┐
+        Yes                       No
+         │                         │
+         ▼                         │
+┌─────────────────┐                │
+│ Append product  │                │
+│ to flagged list │                │
+└────────┬────────┘                │
+         │                         │
+         └────────────┬────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Update overall peak_fluctuation if needed │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Print summary, flagged products & peak    │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+          ┌───────────────────────┐
+          │         Stop          │
+          └───────────────────────┘
 ```
 
 ## Pseudocode
@@ -91,7 +141,6 @@ END
 ```
 
 
-
 ## Test Cases
 | Test Case | Product Price History | Max Step Change | Threshold `> 15.0%` |
 | :--- | :--- | :--- | :--- |
@@ -112,7 +161,6 @@ P03 (Webcam): -20.00%
 
 Highest Overall Fluctuation : P03 (Webcam) with 20.00% magnitude (-20.00%)
 ```
-
 
 ## Conclusion
 Tracking consecutive percentage changes and absolute fluctuation magnitudes across nested price lists enables reliable volatility detection and threshold alerting using basic lists, tuples, loops, and conditionals.
