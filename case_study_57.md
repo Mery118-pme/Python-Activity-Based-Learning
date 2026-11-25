@@ -1,12 +1,12 @@
 # Case Study 57: Smart Canteen Order and Stock Management
 
 ## Problem Statement
-Process successive customer orders, calculate bills, update available inventory, reject unavailable quantities, and summarize daily sales and remaining stock[cite: 5].
+Process successive customer orders, calculate bills, update available inventory, reject unavailable quantities, and summarize daily sales and remaining stock.
 
 ## Objectives
-- Maintain a canteen menu/inventory list of `(item_code, item_name, unit_price, stock_qty)` tuples (or parallel lists/tuples) and update stock as orders are fulfilled[cite: 5].
-- Validate each order item for valid item code, positive order quantity, and sufficient stock[cite: 5].
-- Reject orders with insufficient stock or invalid quantities without deducting inventory, and produce a daily sales and remaining stock summary[cite: 5].
+- Maintain a canteen menu/inventory list and update stock as orders are fulfilled.
+- Validate each order item for valid item code, positive order quantity, and sufficient stock.
+- Reject orders with insufficient stock or invalid quantities without deducting inventory, and produce a daily sales and remaining stock summary.
 
 ## Assumptions
 - Each canteen item has a unique `item_code`, `item_name`, `unit_price` (Rs.), and initial `stock_qty` (integer).
@@ -14,7 +14,7 @@ Process successive customer orders, calculate bills, update available inventory,
 - If requested quantity exceeds available stock (or is `<= 0` or item code is not found), the order is rejected.
 
 ## Algorithm
-1. Store canteen items in a list of tuples `[code, name, price, stock]`? Since tuples are immutable, store item entries in a list of lists `[[code, name, price, stock], ...]` so stock can be updated in place while using tuple unpacking for incoming orders `(order_id, code, qty)`.
+1. Store item entries in a list of lists `[[code, name, price, stock], ...]` so stock can be updated in place while using tuple unpacking for incoming orders `(order_id, code, qty)`.
 2. Initialize `total_revenue = 0.0`, `accepted_orders = []`, and `rejected_orders = []`.
 3. For each `(order_id, code, qty)` in `orders`:
    - Search `inventory` for matching `code`.
@@ -25,25 +25,57 @@ Process successive customer orders, calculate bills, update available inventory,
 
 ## Flowchart
 ```text
-[Start]
-   |
-   v
-[Load inventory list & orders list of (order_id, code, qty) tuples]
-   |
-   v
-[For each (order_id, code, qty) in orders]
-   |
-   +--> (code exists & qty > 0?)
-           |--No--> [Append to rejected_orders]
-           |--Yes-> (qty <= stock?)
-                       |--No--> [Append to rejected_orders: insufficient stock]
-                       |--Yes-> [Deduct stock, compute bill, add to revenue & accepted_orders]
-   |
-   v
-[Print accepted orders, rejected orders, daily revenue & remaining stock]
-   |
-   v
-[Stop]
+          ┌───────────────────────┐
+          │         Start         │
+          └───────────┬───────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Load inventory list & orders list of      │
+│ (order_id, code, qty) tuples              │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ For each (order_id, code, qty) in orders  │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+               ┌─────────────┐
+               │code exists &│
+               │   qty > 0   │
+               └──────┬──────┘
+                      │
+         ┌────────────┴────────────┐
+        No                       Yes
+         │                         │
+         ▼                         ▼
+┌─────────────────┐         ┌─────────────┐
+│ Append to       │         │qty <= stock │
+│ rejected_orders │         └──────┬──────┘
+└────────┬────────┘                │
+         │            ┌────────────┴────────────┐
+         │           No                        Yes
+         │            │                         │
+         │            ▼                         ▼
+         │   ┌─────────────────┐       ┌────────────────────┐
+         │   │ Append rejected │       │ Deduct stock, calc │
+         │   │ (insufficient   │       │ bill, add revenue  │
+         │   │  stock)         │       │ & accepted_orders  │
+         │   └────────┬────────┘       └─────────┬──────────┘
+         │            │                          │
+         └──────┬─────┴──────────────┬───────────┘
+                │                    │
+                ▼                    ▼
+┌───────────────────────────────────────────┐
+│ Print accepted orders, rejected orders,   │
+│ daily revenue & remaining stock           │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+          ┌───────────────────────┐
+          │         Stop          │
+          └───────────────────────┘
 ```
 
 ## Pseudocode
@@ -121,6 +153,7 @@ Remaining Stock:
   C02 - Masala Dosa  : 10
   C03 - Cold Coffee  : 21
 ```
+
 
 ## Conclusion
 Combining mutable inventory rows inside a list with tuple unpacking for incoming orders and audit records keeps stock updates consistent and prevents overselling.
