@@ -24,31 +24,56 @@ Evaluate sample password strings against minimum length, character-category, rep
 
 ## Flowchart
 ```text
-[Start]
-   |
-   v
-[Read candidate password string]
-   |
-   v
-[Check length >= 8, uppercase, lowercase, digit, special char]
-   |
-   v
-[Check >= 3 consecutive identical characters]
-   |
-   v
-[Check prohibited substrings in lowercase password]
-   |
-   +--> (Any rule failed?) --Yes--> [Record failure reasons -> INVALID]
-   |         |
-   |         No
-   v
-[Mark as VALID]
-   |
-   v
-[Print validation report]
-   |
-   v
-[Stop]
+          ┌───────────────────────┐
+          │         Start         │
+          └───────────┬───────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Read candidate password string            │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Check length >= 8, uppercase, lowercase,  │
+│ digit, and special character rules        │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Scan string for >= 3 consecutive repeats  │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Check prohibited substrings in lowercase  │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+               ┌─────────────┐
+               │Any rule fail│
+               └──────┬──────┘
+                      │
+         ┌────────────┴────────────┐
+        Yes                       No
+         │                         │
+         ▼                         ▼
+┌─────────────────┐         ┌─────────────────┐
+│ Record reasons  │         │ Mark as VALID   │
+│ -> INVALID      │         └────────┬────────┘
+└────────┬────────┘                  │
+         │                           │
+         └─────────────┬─────────────┘
+                       │
+                       ▼
+┌───────────────────────────────────────────┐
+│ Print validation report                   │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+          ┌───────────────────────┐
+          │         Stop          │
+          └───────────────────────┘
 ```
 
 ## Pseudocode
