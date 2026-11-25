@@ -1,12 +1,12 @@
 # Case Study 48: Tuple-Based Employee Shift Conflict Detection
 
 ## Problem Statement
-Represent employee shifts as tuples, compare time intervals, detect overlapping assignments, and identify employees with conflicting schedules[cite: 4].
+Represent employee shifts as tuples, compare time intervals, detect overlapping assignments, and identify employees with conflicting schedules.
 
 ## Objectives
-- Represent each shift assignment as a tuple containing employee ID, shift ID, start hour, and end hour[cite: 4].
-- Detect overlapping time intervals for the same employee using tuple unpacking and interval comparison[cite: 4].
-- Produce a clear list of conflicting shift pairs and affected employee IDs[cite: 4].
+- Represent each shift assignment as a tuple containing employee ID, shift ID, start hour, and end hour.
+- Detect overlapping time intervals for the same employee using tuple unpacking and interval comparison.
+- Produce a clear list of conflicting shift pairs and affected employee IDs.
 
 ## Assumptions
 - Times are represented as 24-hour integers (`0` to `24`) within a single day, with `start < end`.
@@ -25,23 +25,54 @@ Represent employee shifts as tuples, compare time intervals, detect overlapping 
 
 ## Flowchart
 ```text
-[Start]
-   |
-   v
-[Load list of (emp_id, shift_code, start_hr, end_hr) tuples]
-   |
-   v
-[For i = 0 to n-2; For j = i+1 to n-1]
-   |
-   +--> (same emp_id AND start1 < end2 AND start2 < end1?)
-           |--Yes--> [Record conflict pair & add emp_id to conflicted list]
-           |--No----> [Continue]
-   |
-   v
-[Print all conflicts & conflicted employees]
-   |
-   v
-[Stop]
+          ┌───────────────────────┐
+          │         Start         │
+          └───────────┬───────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Load list of (emp_id, shift_code, s, e)   │
+│ tuples and validate 0 <= s < e <= 24      │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Outer loop: i = 0 to n - 2                │
+│ Unpack emp1, code1, s1, e1 = shifts[i]    │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Inner loop: j = i + 1 to n - 1            │
+│ Unpack emp2, code2, s2, e2 = shifts[j]    │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+               ┌─────────────┐
+               │emp1==emp2 & │
+               │s1<e2 & s2<e1│
+               └──────┬──────┘
+                      │
+         ┌────────────┴────────────┐
+        Yes                       No
+         │                         │
+         ▼                         │
+┌─────────────────┐                │
+│ Append conflict │                │
+│ & record emp1   │                │
+└────────┬────────┘                │
+         │                         │
+         └────────────┬────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Print all conflicts & conflicted employees│
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+          ┌───────────────────────┐
+          │         Stop          │
+          └───────────────────────┘
 ```
 
 ## Pseudocode
@@ -93,6 +124,7 @@ Conflict: E103 | SH5 (10:00-16:00) overlaps with SH6 (14:00-15:00)
 
 Employees with Conflicting Schedules: E101, E103
 ```
+
 
 ## Conclusion
 Tuple unpacking and pairwise interval checks make schedule overlap detection concise, readable, and free of external dependencies.
