@@ -1,10 +1,10 @@
 # Case Study 50: Tuple-Based Route Distance Analysis
 
 ## Problem Statement
-Store geographical coordinates as tuples, calculate distances between successive points using a supplied formula, and identify the longest route segment[cite: 4].
+Store geographical coordinates as tuples, calculate distances between successive points using a supplied formula, and identify the longest route segment.
 
 ## Objectives
-- Represent route waypoints as `(x, y)` coordinate tuples inside a list[cite: 4].
+- Represent route waypoints as coordinate tuples inside a list.
 - Compute Euclidean distance between each pair of consecutive waypoints using $d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$ (via `** 0.5`).
 - Identify the longest route segment along with the total route distance.
 
@@ -14,7 +14,7 @@ Store geographical coordinates as tuples, calculate distances between successive
 - The longest segment is the one with the maximum distance (first occurrence kept on exact ties).
 
 ## Algorithm
-1. Store waypoints as a list of `(label, x, y)` or `(x, y)` tuples; here we use `(waypoint_name, x, y)` tuples.
+1. Store waypoints as a list of `(waypoint_name, x, y)` tuples.
 2. Validate that at least `2` waypoints exist.
 3. Loop from index `1` to `len(waypoints) - 1`:
    - Unpack previous waypoint `(name1, x1, y1)` and current waypoint `(name2, x2, y2)`.
@@ -25,25 +25,60 @@ Store geographical coordinates as tuples, calculate distances between successive
 
 ## Flowchart
 ```text
-[Start]
-   |
-   v
-[Load list of (name, x, y) coordinate tuples]
-   |
-   v
-[Loop i = 1 to n-1: unpack prev & curr points]
-   |
-   v
-[Compute distance = ((x2-x1)^2 + (y2-y1)^2) ** 0.5]
-   |
-   v
-[Append segment to list, add to total, update longest]
-   |
-   v
-[Print segments, total distance & longest segment]
-   |
-   v
-[Stop]
+          ┌───────────────────────┐
+          │         Start         │
+          └───────────┬───────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Load list of (name, x, y) coordinate tuples│
+│ and validate len(waypoints) >= 2          │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Loop idx = 1 to n - 1:                    │
+│ Unpack prev & curr waypoint tuples        │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Compute dx = x2 - x1, dy = y2 - y1        │
+│ dist = ((dx ** 2) + (dy ** 2)) ** 0.5     │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Add dist to total_distance;               │
+│ append segment tuple to segments list     │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+               ┌─────────────┐
+               │dist>max_dist│
+               └──────┬──────┘
+                      │
+         ┌────────────┴────────────┐
+        Yes                       No
+         │                         │
+         ▼                         │
+┌─────────────────┐                │
+│ Update max_dist │                │
+│ & longest_seg   │                │
+└────────┬────────┘                │
+         │                         │
+         └────────────┬────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────┐
+│ Print segments, total distance &          │
+│ longest route segment                     │
+└─────────────────────┬─────────────────────┘
+                      │
+                      ▼
+          ┌───────────────────────┐
+          │         Stop          │
+          └───────────────────────┘
 ```
 
 ## Pseudocode
@@ -75,7 +110,6 @@ END
 ```
 
 
-
 ## Test Cases
 | Test Case | Waypoint Segment | Expected Distance |
 | :--- | :--- | :--- |
@@ -93,7 +127,6 @@ Segment 3: StopB (3.0, 16.0) -> End (8.0, 16.0) | Distance: 5.00
 Total Route Distance : 22.00
 Longest Segment      : Segment 2 (StopA -> StopB) with distance 12.00
 ```
-
 
 ## Conclusion
 Using coordinate tuples with tuple unpacking and exponentiation (`** 0.5`) computes segment distances, cumulative route length, and longest-leg identification cleanly without external math imports.
